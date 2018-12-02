@@ -5,13 +5,13 @@ function UIMessage() {
 
 UIMessage.prototype.init = function() {
   this.messageDiv = document.getElementById('messagesContent');
-}
+};
 
 UIMessage.prototype.displayMessage = function(message) {
-  this.messageDiv.innerHTML = message;
-  setTimeout(() => {
-    this.messageDiv.innerHTML = null;
-  }, 2000);
-}
+  var newMessageDiv = document.createElement('div');
+  newMessageDiv.innerText = message;
+  this.messageDiv.append(newMessageDiv);
+  this.messageDiv.scrollTop = this.messageDiv.scrollHeight;
+};
 
 module.exports = UIMessage;

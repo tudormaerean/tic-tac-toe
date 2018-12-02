@@ -1,7 +1,7 @@
 var http = require('http');
 var url = require('url');
 var routesController = require('./src/backend/routes/routesController');
-var Main = require('./src/backend/classes/Main/Main');
+var Main = require('./src/backend/classes/Main');
 
 var port = 3000;
 

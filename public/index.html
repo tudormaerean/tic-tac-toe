@@ -5,22 +5,31 @@
   <title>Tic Tac Toe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+  <script id="self-player-lobby-template" type="text/template">
+    <div class="player-name"></div>
+  </script>
+  <script id="other-players-lobby-template" type="text/template">
+    <span class="player-name"></span>
+    <button class="player-start-game-button">Start game</button>
+  </script>
 </head>
 <body>
   <div class="center-align container">
     <h2 class="title large">Tic Tac Toe</h2>
   </div>
-  <div class="center-align container">
-    <div class="title">Lobby:</div>
-    <div id="lobbyContent" class="content"></div>    
+  <div class="center-align horizontal-container">
+    <div class="center-align container equal">
+      <div class="title">Lobby:</div>
+      <div id="lobbyContent" class="content overflow-content"></div>    
+    </div>
+    <div class="center-align container equal">
+      <div class="title">Messages:</div>
+      <div id="messagesContent" class="content overflow-content"></div>
+    </div>
   </div>
   <div class="center-align container">
     <div class="title">Game:</div>
     <div id="gameContent" class="content"></div>
-  </div>
-  <div class="center-align container">
-    <div class="title">Messages:</div>
-    <div id="messagesContent" class="content"></div>
   </div>
   <script src="bundle.js"></script>
 </body>

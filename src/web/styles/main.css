@@ -7,12 +7,11 @@ body {
 }
 
 .container {
-  margin: 1rem auto;
+  margin: 1rem 2rem;
   background-color: #fff;
   border: 1px solid #aaa;
   border-radius: 0.25rem;
   box-shadow: 0px 1px 4px 2px #333;
-  min-width: 50%;
 }
 
 .center-align {
@@ -32,4 +31,18 @@ body {
 .content {
   margin: 1rem;
   padding: 1rem;
+}
+
+.overflow-content {
+  height: 5rem;
+  overflow: auto;
+}
+
+.horizontal-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.equal {
+  flex: 1;
 }

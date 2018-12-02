@@ -1,4 +1,4 @@
-var Main = require('./classes/Main/Main');
+var Main = require('./classes/Main');
 
 (() => {
   var application = new Main();
