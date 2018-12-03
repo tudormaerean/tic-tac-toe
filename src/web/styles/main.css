@@ -46,3 +46,14 @@ body {
 .equal {
   flex: 1;
 }
+
+.player-start-game-button {
+  background-color: #99f;
+  color: #fff;
+  border: 0px solid #99f;
+  border-radius: 3px;
+}
+
+.player-start-game-button:hover {
+  background-color: #bbf;
+}

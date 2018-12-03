@@ -7,7 +7,6 @@ function SocketController() {
   this.onPlayerHasJoined = new CEvent();
   this.onPlayerHasLeft = new CEvent();
   this.onGettingNamed = new CEvent();
-  this.constants = constants;
 }
 
 SocketController.prototype.init = function (path) {
@@ -27,13 +26,13 @@ SocketController.prototype.startMessageListener = function () {
     var parsedMessage = JSON.parse(message.data);
     this.onMessageReceived.trigger(parsedMessage);
     switch (parsedMessage.type) {
-      case this.constants.GENERALJOIN:
+      case constants.GENERALJOIN:
         this.onPlayerHasJoined.trigger(parsedMessage);
         break;
-      case this.constants.GENERALLEAVE:
+      case constants.GENERALLEAVE:
         this.onPlayerHasLeft.trigger(parsedMessage);
         break;
-      case this.constants.JOINACK:
+      case constants.JOINACK:
         this.onGettingNamed.trigger(parsedMessage);
         break;
     }
@@ -41,23 +40,30 @@ SocketController.prototype.startMessageListener = function () {
   };  
 };
 
-SocketController.prototype.createMessageObject = function (type, target) {
-  return {
-    type,
-    target,
+SocketController.prototype.createMessageObject = function (type, target, myPlayerName) {
+  switch (type) {
+    case constants.REQUESTNEWGAME:
+      return {
+        type: constants.REQUESTNEWGAME,
+        game: {
+          targetPlayer: target,
+          initiatingPlayer: myPlayerName,
+        },
+      };
   };
 };
 
 SocketController.prototype.sendMessage = function (message) {
+  console.log('state', this.socket.readyState);
   this.socket.send(JSON.stringify(message));
 };
 
-SocketController.prototype.startGame = function (targetPlayer) {
-  this.sendMessage(this.createMessageObject(this.constants.REQUESTNEWGAME, targetPlayer));
+SocketController.prototype.startGame = function (targetPlayer, myPlayerName) {
+  this.sendMessage(this.createMessageObject(constants.REQUESTNEWGAME, targetPlayer, myPlayerName));
 };
 
 SocketController.prototype.playMove = function (move) {
-  this.sendMessage(this.createMessageObject(this.constants.MOVE, move));
+  this.sendMessage(this.createMessageObject(constants.MOVE, move));
 };
 
 module.exports = SocketController;

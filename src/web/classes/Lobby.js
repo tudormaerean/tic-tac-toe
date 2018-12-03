@@ -22,7 +22,7 @@ Lobby.prototype.update = function (playersArray, myPlayerName) {
       return;
     if (player.available) {
       var otherPlayersDiv = template('#other-players-available-lobby-template');
-      otherPlayersDiv.querySelector('.player-start-game-button').addEventListener('click', () => this.socketController.startGame(player.name));
+      otherPlayersDiv.querySelector('.player-start-game-button').addEventListener('click', () => this.socketController.startGame(player.name, myPlayerName));
     } else {
       var otherPlayersDiv = template('#other-players-notavailable-lobby-template');
     }

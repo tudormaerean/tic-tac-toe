@@ -8,7 +8,6 @@ function SocketController() {
   this.connectionsArray;
   this.onNewConnection = new CEvent();
   this.onRemoveConnection = new CEvent();
-  this.constants = constants;
 }
 
 SocketController.prototype.init = function (server) {
@@ -43,25 +42,24 @@ SocketController.prototype.addConnection = function (connection) {
   this.connectionsArray.push(newConnection);
   this.onNewConnection.trigger(newConnection);
 
-  newConnection.sendMessage(this.createMessageObject(this.constants.JOINACK, `You (${newConnection.player.name}) have been added to the lobby.`, newConnection.player));
+  newConnection.sendMessage(this.createMessageObject(constants.JOINACK, `You (${newConnection.player.name}) have been added to the lobby.`, newConnection.player));
   newConnection.onConnectionClose.addEventListener((connection) => this.removeConnection(connection));
   newConnection.onConnectionError.addEventListener((error) => {
     this.removeConnection(newConnection);
     console.log('error', error);
   });
 
-  this.updateClients(this.createMessageObject(this.constants.GENERALJOIN, `${newConnection.player.name} has joined the lobby.`, newConnection.player));
+  this.updateClients(this.createMessageObject(constants.GENERALJOIN, `${newConnection.player.name} has joined the lobby.`, newConnection.player));
 };
 
 SocketController.prototype.removeConnection = function (connection) {
   var filteredArray = this.connectionsArray.filter(item => item.player.name !== connection.player.name);
   this.connectionsArray = filteredArray;
-  this.updateClients(this.createMessageObject(this.constants.GENERALLEAVE, `${connection.player.name} has left the lobby.`, connection.player));
+  this.updateClients(this.createMessageObject(constants.GENERALLEAVE, `${connection.player.name} has left the lobby.`, connection.player));
   this.onRemoveConnection.trigger(connection);
 };
 
 SocketController.prototype.updateClients = function (message) {
-  console.log(message);
   var updatedPlayersArray = this.connectionsArray.map(connection => connection.player);
   this.connectionsArray.forEach(connection => {
     connection.sendMessage({
