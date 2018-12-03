@@ -20,13 +20,13 @@ Lobby.prototype.update = function (playersArray, myPlayerName) {
   playersArray.forEach(player => {
     if (player.name === myPlayerName)
       return;
-    var otherPlayersDiv = template('#other-players-lobby-template');
-    otherPlayersDiv.querySelector('.player-name').innerText = player.name;
     if (player.available) {
+      var otherPlayersDiv = template('#other-players-available-lobby-template');
       otherPlayersDiv.querySelector('.player-start-game-button').addEventListener('click', () => this.socketController.startGame(player.name));
     } else {
-      otherPlayersDiv.querySelector('.player-start-game-button').remove();
+      var otherPlayersDiv = template('#other-players-notavailable-lobby-template');
     }
+    otherPlayersDiv.querySelector('.player-name').innerText = player.name;
     this.lobbyDiv.append(otherPlayersDiv);
   });
 };

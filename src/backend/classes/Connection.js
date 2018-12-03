@@ -5,7 +5,9 @@ function Connection(connection) {
   this.connection = connection.connection;
   this.onMessageReceived = new CEvent();
   this.onConnectionClose = new CEvent();
+  this.onConnectionError = new CEvent();
   this.startCloseListener();
+  this.startErrorListener();
 }
 
 Connection.prototype.startMessageListener = function () {
@@ -20,6 +22,10 @@ Connection.prototype.startCloseListener = function () {
     });
   });
 };
+
+Connection.prototype.startErrorListener = function () {
+  this.connection.on('error', (error) => this.connection.onConnectionError.trigger(error));
+}
 
 Connection.prototype.sendMessage = function (message) {
   this.connection.send(JSON.stringify(message));

@@ -1,12 +1,14 @@
 var WebSocketServer = require('websocket').server;
 var Connection = require('./Connection');
 var CEvent = require('./CEvent');
+var constants = require('../utils/constants');
 
 function SocketController() {
   this.wsServer;
   this.connectionsArray;
   this.onNewConnection = new CEvent();
   this.onRemoveConnection = new CEvent();
+  this.constants = constants;
 }
 
 SocketController.prototype.init = function (server) {
@@ -16,10 +18,10 @@ SocketController.prototype.init = function (server) {
     httpServer: server,
     autoAcceptConnections: true,
   });
-  this.startConnectionListener();
+  this.startConnectedListener();
 };
 
-SocketController.prototype.startConnectionListener = function () {
+SocketController.prototype.startConnectedListener = function () {
   this.wsServer.on('connect', (connection) => {
     this.addConnection(connection);
   });
@@ -41,16 +43,20 @@ SocketController.prototype.addConnection = function (connection) {
   this.connectionsArray.push(newConnection);
   this.onNewConnection.trigger(newConnection);
 
-  newConnection.sendMessage(this.createMessageObject('join-ack', `You (${newConnection.player.name}) have been added to the lobby.`, newConnection.player));
+  newConnection.sendMessage(this.createMessageObject(this.constants.JOINACK, `You (${newConnection.player.name}) have been added to the lobby.`, newConnection.player));
   newConnection.onConnectionClose.addEventListener((connection) => this.removeConnection(connection));
+  newConnection.onConnectionError.addEventListener((error) => {
+    this.removeConnection(newConnection);
+    console.log('error', error);
+  });
 
-  this.updateClients(this.createMessageObject('general-join', `${newConnection.player.name} has joined the lobby.`, newConnection.player));
+  this.updateClients(this.createMessageObject(this.constants.GENERALJOIN, `${newConnection.player.name} has joined the lobby.`, newConnection.player));
 };
 
 SocketController.prototype.removeConnection = function (connection) {
   var filteredArray = this.connectionsArray.filter(item => item.player.name !== connection.player.name);
   this.connectionsArray = filteredArray;
-  this.updateClients(this.createMessageObject('general-leave', `${connection.player.name} has left the lobby.`, 'na', connection.player));
+  this.updateClients(this.createMessageObject(this.constants.GENERALLEAVE, `${connection.player.name} has left the lobby.`, connection.player));
   this.onRemoveConnection.trigger(connection);
 };
 
