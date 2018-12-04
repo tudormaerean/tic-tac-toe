@@ -6,7 +6,8 @@ function SocketController() {
   this.onMessageReceived = new CEvent();
   this.onPlayerHasJoined = new CEvent();
   this.onPlayerHasLeft = new CEvent();
-  this.onGettingNamed = new CEvent();
+  this.onJoining = new CEvent();
+  this.onGameStart = new CEvent();
 }
 
 SocketController.prototype.init = function (path) {
@@ -33,7 +34,9 @@ SocketController.prototype.startMessageListener = function () {
         this.onPlayerHasLeft.trigger(parsedMessage);
         break;
       case constants.JOINACK:
-        this.onGettingNamed.trigger(parsedMessage);
+        this.onJoining.trigger(parsedMessage);
+      case constants.STARTGAME:
+        this.onGameStart.trigger(parsedMessage);
         break;
     }
     console.log('message', parsedMessage);

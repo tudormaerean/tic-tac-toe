@@ -6,6 +6,7 @@ var constants = require('../utils/constants');
 function SocketController() {
   this.wsServer;
   this.connectionsArray;
+  this.onNewGameRequested = new CEvent();
   this.onNewConnection = new CEvent();
   this.onRemoveConnection = new CEvent();
 }
@@ -43,6 +44,7 @@ SocketController.prototype.addConnection = function (connection) {
   this.onNewConnection.trigger(newConnection);
 
   newConnection.sendMessage(this.createMessageObject(constants.JOINACK, `You (${newConnection.player.name}) have been added to the lobby.`, newConnection.player));
+  newConnection.onNewGameRequested.addEventListener((newGameObj) => this.onNewGameRequested.trigger(newGameObj));
   newConnection.onConnectionClose.addEventListener((connection) => this.removeConnection(connection));
   newConnection.onConnectionError.addEventListener((error) => {
     this.removeConnection(newConnection);

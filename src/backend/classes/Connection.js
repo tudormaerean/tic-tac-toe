@@ -43,7 +43,6 @@ Connection.prototype.startErrorListener = function () {
 }
 
 Connection.prototype.sendMessage = function (message) {
-  // console.log('BE message', message);
   this.connection.send(JSON.stringify(message));
 };
 

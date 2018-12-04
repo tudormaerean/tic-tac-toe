@@ -10,19 +10,19 @@ function Lobby(socketController) {
   this.onStartGame = new CEvent();
 }
 
-Lobby.prototype.update = function (playersArray, myPlayerName) {
+Lobby.prototype.update = function (playersArray, myPlayer) {
   this.lobbyDiv.innerHTML = '';
 
   this.selfDiv = template('#self-player-lobby-template');
-  this.selfDiv.querySelector('.player-name').innerText = myPlayerName;
+  this.selfDiv.querySelector('.player-name').innerText = myPlayer.name;
   this.lobbyDiv.append(this.selfDiv);
 
   playersArray.forEach(player => {
-    if (player.name === myPlayerName)
+    if (player.name === myPlayer.name)
       return;
-    if (player.available) {
+    if (player.available && myPlayer.available) {
       var otherPlayersDiv = template('#other-players-available-lobby-template');
-      otherPlayersDiv.querySelector('.player-start-game-button').addEventListener('click', () => this.socketController.startGame(player.name, myPlayerName));
+      otherPlayersDiv.querySelector('.player-start-game-button').addEventListener('click', () => this.socketController.startGame(player.name, myPlayer.name));
     } else {
       var otherPlayersDiv = template('#other-players-notavailable-lobby-template');
     }
