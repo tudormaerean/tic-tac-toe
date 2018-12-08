@@ -64,8 +64,23 @@ SocketController.prototype.removeConnection = function (connection) {
   this.onRemoveConnection.trigger(connection);
 };
 
+SocketController.prototype.makeClientsAvailableGameCompleted = function (messageType, playerWon, playerLost) {
+  this.connectionsArray.map(connection => {
+    if (connection.player.name === playerWon.name || connection.player.name === playerLost.name) {
+      connection.player.available = true;
+    }
+    return connection;
+  });
+  var message = this.createMessageObject(
+    messageType,
+    `${playerWon.name} has won a game against ${playerLost.name}.`,
+  );
+  this.updateClients(message);
+};
+
 SocketController.prototype.updateClients = function (message) {
   var updatedPlayersArray = this.connectionsArray.map(connection => connection.player);
+  console.log('updatedPlayersArray', updatedPlayersArray);
   this.connectionsArray.forEach(connection => {
     connection.sendMessage({
       type: message.type,

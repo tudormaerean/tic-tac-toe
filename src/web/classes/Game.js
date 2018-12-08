@@ -22,14 +22,14 @@ Game.prototype.updateBoard = function (board) {
     for (var indexColumn = 0; indexColumn < board.length; indexColumn++) {
       var newCell = new Cell(board[indexRow][indexColumn], newColumnDiv, indexRow, indexColumn, this.itsMyTurn);
       newCell.onCellClick && newCell.onCellClick.addEventListener((row, column) => this.move({ row, column }));
-      newColumn.push(newCell);
+      newColumn.push(newCell.div);
     }
     this.game.board.push(newColumn);
   }
 };
 
 Game.prototype.move = function (move) {
-  this.socketController.sendMessage(this.socketController.createMessageObject(constants.messageType.MOVE, undefined, this.player.name, move));
+  this.socketController.sendMessage(this.socketController.createMessageObject(constants.messageType.GAMEMOVE, undefined, this.player.name, move));
 };
 
 Game.prototype.clearBoard = function () {
@@ -37,7 +37,7 @@ Game.prototype.clearBoard = function () {
 };
 
 Game.prototype.updateGame = function (update) {
-  this.whosTurnIsIt = update.game.currentTurn.name;
+  this.whosTurnIsIt = update.type === constants.messageType.GAMECOMPLETED ? undefined : update.game.currentTurn.name;
   this.clearBoard();
   this.updateBoard(update.game.board);
 };

@@ -20,12 +20,12 @@ Connection.prototype.startMessageListener = function () {
   this.connection.on('message', (message) => {
     if (message.type === 'utf8') {
       var parsedMessage = JSON.parse(message.utf8Data);
-      console.log(`${this.player.name} has said:`, parsedMessage);
+      console.log(`${this.player.name} has said:`, message);
       switch (parsedMessage.type) {
         case constants.messageType.REQUESTNEWGAME:
           this.onNewGameRequested.trigger(parsedMessage);
           break;
-        case constants.messageType.MOVE:
+        case constants.messageType.GAMEMOVE:
           this.onGameUpdate.trigger(parsedMessage);
           break;
       }

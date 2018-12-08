@@ -24,10 +24,30 @@ Main.prototype.init = function() {
   this.socketController = new SocketController();
   this.socketController.onJoining.addEventListener((message) => this.updatePlayer(message));
   this.socketController.onMessageReceived.addEventListener((message) => this.displayServerMessage(message));
-  this.socketController.onPlayerHasJoined.addEventListener((message) => this.updatePlayersArray(message));
-  this.socketController.onPlayerHasLeft.addEventListener((message) => this.updatePlayersArray(message));
-  this.socketController.onGameStart.addEventListener((message) => this.updatePlayersArray(message));
-  this.socketController.onGameUpdated.addEventListener((message) => this.updateGame(message));
+  this.socketController.onPlayerHasJoined.addEventListener((message) => {
+    this.updatePlayersArray(message);
+    this.displayServerMessage(message);
+  });
+  this.socketController.onPlayerHasLeft.addEventListener((message) => {
+    this.updatePlayersArray(message);
+    this.displayServerMessage(message);
+  });
+  this.socketController.onPlayersAvailable.addEventListener((message) => {
+    this.updatePlayersArray(message);
+    this.displayServerMessage(message);
+  });
+  this.socketController.onGameStart.addEventListener((message) => {
+    this.updatePlayersArray(message);
+    this.displayServerMessage(message);
+  });
+  this.socketController.onGameUpdated.addEventListener((message) => {
+    this.updateGame(message);
+    this.displayServerMessage(message);
+  });
+  this.socketController.onGameCompleted.addEventListener((message) => {
+    this.updateGame(message);
+    this.displayServerMessage(message);
+  });
   this.socketController.init(serverSocketPath);
   this.lobbyHandler = new Lobby(this.socketController);
 };
@@ -42,14 +62,17 @@ Main.prototype.updatePlayersArray = function(message) {
   this.playersArray = message.updatedPlayersArray;
   if (message.type !== constants.messageType.JOINACK) {
     if (message.type === constants.messageType.GAMESTARTED) {
-      const itsMyGame = message.game.playerOne.name === this.player.name || message.game.playerTwo.name === this.player.name;
-      if (itsMyGame) {
+      if (this.itsMyGame(message)) {
         const foundPlayerMessage = {
           player: message.updatedPlayersArray.find(player => player.name === this.player.name)
         };
         this.updatePlayer(foundPlayerMessage);
         this.startGame(message.game, this.socketController);
       }
+    }
+    if (message.type === constants.messageType.PLAYERSAVAILABLE) {
+      this.player.available = true;
+      this.closeGame();
     }
     this.lobbyHandler.update(this.playersArray, this.player);
   }
@@ -60,17 +83,40 @@ Main.prototype.displayServerMessage = function (message) {
     this.messageHandler.displayMessage(message.text);
   }
   if (message.type === constants.messageType.GAMESTARTED) {
+    if (this.itsMyGame(message)) {
+      this.messageHandler.displayGameMessages(message.text);
+    }
     this.messageHandler.displayMessage(message.text);
     this.updatePlayersArray(message);
   }
+  if (message.type === constants.messageType.GAMEUPDATED || message.type === constants.messageType.GAMECOMPLETED) {
+    if (this.itsMyGame(message)) {
+      this.messageHandler.displayGameMessages(message.text);
+    }
+    this.messageHandler.displayMessage(message.text);
+  }
+  if (message.type === constants.messageType.GENERAL
+    || message.type === constants.messageType.GENERALJOIN
+    || message.type === constants.messageType.GENERALLEAVE) {
+    this.messageHandler.displayMessage(message.text);
+  }
+};
+
+Main.prototype.itsMyGame = function (message) {
+  return message.game.playerOne.name === this.player.name || message.game.playerTwo.name === this.player.name;
 };
 
 Main.prototype.startGame = function (game, socketController) {
-  this.gameHandler = new Game(game, socketController, this.player);
+  if (!this.gameHandler) {
+    this.gameHandler = new Game(game, socketController, this.player);
+  }
+};
+
+Main.prototype.closeGame = function () {
+  this.gameHandler = null;
 };
 
 Main.prototype.updateGame = function (update) {
-  this.messageHandler.displayMessage(update.text);
   this.gameHandler.updateGame(update);
 };
 

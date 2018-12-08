@@ -1,13 +1,16 @@
 module.exports = {
   messageType: {
+    GENERAL: 'general',
     STARTGAME: 'start-game',
     REQUESTNEWGAME: 'request-new-game',
     GAMESTARTED: 'game-started',
     GAMEUPDATED: 'game-updated',
+    GAMECOMPLETED: 'game-completed',
     GENERALJOIN: 'general-join',
     GENERALLEAVE: 'general-leave',
+    PLAYERSAVAILABLE: 'players-available',
     JOINACK: 'join-ack',
-    MOVE: 'move',
+    GAMEMOVE: 'game-move',
   },
   cellType: {
     X: 'X',

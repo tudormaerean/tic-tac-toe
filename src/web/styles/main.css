@@ -75,6 +75,7 @@ body {
 }
 
 .board-cell-content {
+  font-family: Corbel;
   font-size: 3rem;
   font-weight: 900;
 }

@@ -32,11 +32,16 @@ Main.prototype.startNewGame = function (newGameObj) {
   var newGame = new Game();
   newGame.init(gameObj, this.socketController);
   this.gamesArray.push(newGame);
+  newGame.onGameEnded.addEventListener(() => this.closeGame(newGame));
 };
 
 Main.prototype.updateGame = function (gameUpdate) {
   const gameToUpdate = this.gamesArray.find(game => game.playerOne.name === gameUpdate.game.player.name || game.playerTwo.name === gameUpdate.game.player.name);
   gameToUpdate.updateGameBoard(gameUpdate);
+};
+
+Main.prototype.closeGame = function (game) {
+  this.gamesArray.splice(this.gamesArray.indexOf(game), 1);
 };
 
 module.exports = Main;
