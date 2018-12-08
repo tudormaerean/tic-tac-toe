@@ -57,3 +57,24 @@ body {
 .player-start-game-button:hover {
   background-color: #bbf;
 }
+
+.board-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.board-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 50px;
+  width: 50px;
+  margin: 2px;
+  border: 1px solid #333;
+}
+
+.board-cell-content {
+  font-size: 3rem;
+  font-weight: 900;
+}

@@ -1,4 +1,5 @@
 var WebSocketServer = require('websocket').server;
+var util = require('util');
 var Connection = require('./Connection');
 var CEvent = require('./CEvent');
 var constants = require('../utils/constants');
@@ -9,6 +10,7 @@ function SocketController() {
   this.onNewGameRequested = new CEvent();
   this.onNewConnection = new CEvent();
   this.onRemoveConnection = new CEvent();
+  this.onGameUpdate = new CEvent();
 }
 
 SocketController.prototype.init = function (server) {
@@ -27,8 +29,8 @@ SocketController.prototype.startConnectedListener = function () {
   });
 };
 
-SocketController.prototype.createMessageObject = function (type, text, player) {
-  return { type, text, player };
+SocketController.prototype.createMessageObject = function (type, text, player, game) {
+  return { type, text, player, game };
 };
 
 SocketController.prototype.addConnection = function (connection) {
@@ -43,21 +45,22 @@ SocketController.prototype.addConnection = function (connection) {
   this.connectionsArray.push(newConnection);
   this.onNewConnection.trigger(newConnection);
 
-  newConnection.sendMessage(this.createMessageObject(constants.JOINACK, `You (${newConnection.player.name}) have been added to the lobby.`, newConnection.player));
+  newConnection.sendMessage(this.createMessageObject(constants.messageType.JOINACK, `You (${newConnection.player.name}) have been added to the lobby.`, newConnection.player));
   newConnection.onNewGameRequested.addEventListener((newGameObj) => this.onNewGameRequested.trigger(newGameObj));
+  newConnection.onGameUpdate.addEventListener((move) => this.onGameUpdate.trigger(move));
   newConnection.onConnectionClose.addEventListener((connection) => this.removeConnection(connection));
   newConnection.onConnectionError.addEventListener((error) => {
     this.removeConnection(newConnection);
     console.log('error', error);
   });
 
-  this.updateClients(this.createMessageObject(constants.GENERALJOIN, `${newConnection.player.name} has joined the lobby.`, newConnection.player));
+  this.updateClients(this.createMessageObject(constants.messageType.GENERALJOIN, `${newConnection.player.name} has joined the lobby.`, newConnection.player));
 };
 
 SocketController.prototype.removeConnection = function (connection) {
   var filteredArray = this.connectionsArray.filter(item => item.player.name !== connection.player.name);
   this.connectionsArray = filteredArray;
-  this.updateClients(this.createMessageObject(constants.GENERALLEAVE, `${connection.player.name} has left the lobby.`, connection.player));
+  this.updateClients(this.createMessageObject(constants.messageType.GENERALLEAVE, `${connection.player.name} has left the lobby.`, connection.player));
   this.onRemoveConnection.trigger(connection);
 };
 
@@ -68,6 +71,7 @@ SocketController.prototype.updateClients = function (message) {
       type: message.type,
       text: message.text,
       player: message.player,
+      game: message.game,
       updatedPlayersArray,
     });
   });

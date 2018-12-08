@@ -1,3 +1,4 @@
+var jc = require('json-cycle');
 var CEvent = require('./CEvent');
 var constants = require('../utils/constants');
 
@@ -8,6 +9,7 @@ function SocketController() {
   this.onPlayerHasLeft = new CEvent();
   this.onJoining = new CEvent();
   this.onGameStart = new CEvent();
+  this.onGameUpdated = new CEvent();
 }
 
 SocketController.prototype.init = function (path) {
@@ -24,49 +26,61 @@ SocketController.prototype.startConnectedListener = function () {
 
 SocketController.prototype.startMessageListener = function () {
   this.socket.onmessage = (message) => {
-    var parsedMessage = JSON.parse(message.data);
+    var parsedMessage = jc.parse(message.data);
     this.onMessageReceived.trigger(parsedMessage);
     switch (parsedMessage.type) {
-      case constants.GENERALJOIN:
+      case constants.messageType.GENERALJOIN:
         this.onPlayerHasJoined.trigger(parsedMessage);
         break;
-      case constants.GENERALLEAVE:
+      case constants.messageType.GENERALLEAVE:
         this.onPlayerHasLeft.trigger(parsedMessage);
         break;
-      case constants.JOINACK:
+      case constants.messageType.JOINACK:
         this.onJoining.trigger(parsedMessage);
-      case constants.STARTGAME:
+      case constants.messageType.STARTGAME:
         this.onGameStart.trigger(parsedMessage);
+        break;
+      case constants.messageType.GAMEUPDATED:
+        this.onGameUpdated.trigger(parsedMessage);
         break;
     }
     console.log('message', parsedMessage);
   };  
 };
 
-SocketController.prototype.createMessageObject = function (type, target, myPlayerName) {
+SocketController.prototype.createMessageObject = function (type, target, myPlayerName, move) {
   switch (type) {
-    case constants.REQUESTNEWGAME:
+    case constants.messageType.REQUESTNEWGAME:
       return {
-        type: constants.REQUESTNEWGAME,
+        type: constants.messageType.REQUESTNEWGAME,
         game: {
           targetPlayer: target,
           initiatingPlayer: myPlayerName,
+        },
+      };
+    case constants.messageType.MOVE:
+      return {
+        type: constants.messageType.MOVE,
+        game: {
+          player: {
+            name: myPlayerName,
+          },
+          move,
         },
       };
   };
 };
 
 SocketController.prototype.sendMessage = function (message) {
-  console.log('state', this.socket.readyState);
   this.socket.send(JSON.stringify(message));
 };
 
 SocketController.prototype.startGame = function (targetPlayer, myPlayerName) {
-  this.sendMessage(this.createMessageObject(constants.REQUESTNEWGAME, targetPlayer, myPlayerName));
+  this.sendMessage(this.createMessageObject(constants.messageType.REQUESTNEWGAME, targetPlayer, myPlayerName));
 };
 
 SocketController.prototype.playMove = function (move) {
-  this.sendMessage(this.createMessageObject(constants.MOVE, move));
+  this.sendMessage(this.createMessageObject(constants.messageType.MOVE, move));
 };
 
 module.exports = SocketController;

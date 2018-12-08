@@ -1,8 +1,8 @@
 function instantiateTemplate(selector) {
   var template = document.querySelector(selector).innerHTML;
-  var createElementDiv = document.createElement('div');
-  createElementDiv.innerHTML = template;
-  return createElementDiv;
+  var createdElementDiv = document.createElement('div');
+  createdElementDiv.innerHTML = template;
+  return createdElementDiv.firstElementChild;
 }
 
 module.exports = instantiateTemplate;

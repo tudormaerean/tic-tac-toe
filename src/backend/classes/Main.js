@@ -13,6 +13,7 @@ Main.prototype.init = function (server) {
   this.socketController.onNewConnection.addEventListener(() => null);
   this.socketController.onRemoveConnection.addEventListener(() => null);
   this.socketController.onNewGameRequested.addEventListener((newGameObj) => this.startNewGame(newGameObj));
+  this.socketController.onGameUpdate.addEventListener((gameUpdate) => this.updateGame(gameUpdate));
 };
 
 Main.prototype.startNewGame = function (newGameObj) {
@@ -31,6 +32,11 @@ Main.prototype.startNewGame = function (newGameObj) {
   var newGame = new Game();
   newGame.init(gameObj, this.socketController);
   this.gamesArray.push(newGame);
+};
+
+Main.prototype.updateGame = function (gameUpdate) {
+  const gameToUpdate = this.gamesArray.find(game => game.playerOne.name === gameUpdate.game.player.name || game.playerTwo.name === gameUpdate.game.player.name);
+  gameToUpdate.updateGameBoard(gameUpdate);
 };
 
 module.exports = Main;

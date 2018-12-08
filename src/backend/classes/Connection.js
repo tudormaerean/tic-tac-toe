@@ -1,3 +1,4 @@
+var jc = require('json-cycle');
 var CEvent = require('./CEvent');
 var constants = require('../utils/constants');
 
@@ -8,6 +9,7 @@ function Connection(connection) {
   this.onConnectionClose = new CEvent();
   this.onConnectionError = new CEvent();
   this.onNewGameRequested = new CEvent();
+  this.onGameUpdate = new CEvent();
   this.startMessageListener();
   this.startCloseListener();
   this.startErrorListener();
@@ -20,8 +22,11 @@ Connection.prototype.startMessageListener = function () {
       var parsedMessage = JSON.parse(message.utf8Data);
       console.log(`${this.player.name} has said:`, parsedMessage);
       switch (parsedMessage.type) {
-        case constants.REQUESTNEWGAME:
+        case constants.messageType.REQUESTNEWGAME:
           this.onNewGameRequested.trigger(parsedMessage);
+          break;
+        case constants.messageType.MOVE:
+          this.onGameUpdate.trigger(parsedMessage);
           break;
       }
       this.onMessageReceived.trigger(parsedMessage);
@@ -43,7 +48,7 @@ Connection.prototype.startErrorListener = function () {
 }
 
 Connection.prototype.sendMessage = function (message) {
-  this.connection.send(JSON.stringify(message));
+  this.connection.send(jc.stringify(message));
 };
 
 module.exports = Connection;
