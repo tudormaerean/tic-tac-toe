@@ -70,7 +70,6 @@ describe('SocketController', function() {
       socketController.connectionsArray.forEach(function(connection) {
         it('should call sendMessage for each connection', function() {
           var spySendMessage = chai.spy.on(connection, 'sendMessage');
-          console.log(connection);
           expect(spySendMessage).to.have.been.called(1);
           expect(spySendMessage).to.have.been.called.with(mockMessage);
         });
