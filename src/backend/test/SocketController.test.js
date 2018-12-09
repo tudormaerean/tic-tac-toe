@@ -1,5 +1,6 @@
 var http = require('http');
 var url = require('url');
+var chai = require('chai');
 var SocketController = require('../classes/SocketController');
 var routesController = require('../routes/routesController');
 var assert = require('assert');
@@ -24,8 +25,11 @@ describe('SocketController', function() {
     var player = {};
     var game = {};
     var socketController = new SocketController();
-    socketController.createMessageObject = function() {};
+    // var spy = chai.spy(socketController.createMessageObject);
+    // socketController.createMessageObject = spy;
+    // socketController.createMessageObject = function() {};
     socketController.createMessageObject(type, text, player, game);
     expect(socketController.createMessageObject).toHaveBeenCalled();
+    // expect(spy).toEqual({type, text, player, game});
   });
 });
