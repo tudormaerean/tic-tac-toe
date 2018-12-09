@@ -86,6 +86,7 @@ SocketController.prototype.createMessageObject = function (type, targetPlayer, m
 };
 
 SocketController.prototype.sendMessage = function (message) {
+  console.log(JSON.stringify(message));
   this.socket.send(JSON.stringify(message));
 };
 
