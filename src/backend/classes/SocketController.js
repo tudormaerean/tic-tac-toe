@@ -91,8 +91,4 @@ SocketController.prototype.updateClients = function (message) {
   });
 };
 
-SocketController.prototype.getPlayers = function () {
-  return this.connectionsArray.map(connection => connection.playerName);
-}
-
 module.exports = SocketController;
