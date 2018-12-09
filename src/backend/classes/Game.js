@@ -74,8 +74,18 @@ Game.prototype.updateGameBoard = function (update) {
   const whoWon = this.checkVictoryConditions();
   this.currentTurn.name = this.currentTurn.name === this.playerOne.name? this.playerTwo.name : this.playerOne.name;
   if (whoWon) {
-    this.updatePlayers(constants.messageType.GAMECOMPLETED, update.game.player, this.currentTurn, update.game.move.row, update.game.move.column);
-    this.socketController.makeClientsAvailableGameCompleted(constants.messageType.PLAYERSAVAILABLE, update.game.player, this.currentTurn);
+    this.updatePlayers(
+      whoWon === 'draw' ? constants.messageType.GAMECOMPLETEDDRAW : constants.messageType.GAMECOMPLETED,
+      update.game.player,
+      this.currentTurn,
+      update.game.move.row,
+      update.game.move.column
+    );
+    this.socketController.makeClientsAvailableGameCompleted(
+      constants.messageType.PLAYERSAVAILABLE,
+      update.game.player,
+      this.currentTurn
+    );
     this.onGameEnded.trigger();
   } else {
     this.updatePlayers(constants.messageType.GAMEUPDATED, update.game.player, this.currentTurn, update.game.move.row, update.game.move.column);
@@ -84,13 +94,14 @@ Game.prototype.updateGameBoard = function (update) {
 
 Game.prototype.checkVictoryConditions = function () {
   var victoryConditionRegex = RegExp(`[X]{${this.board.length}}|[O]{${this.board.length}}`);
-  var addVerticalValues = '';
-  var indexColumnCheck = 0;
+  var addVerticalValues = [];
   var firstDiagonalValues = '';
   var secondDiagonalValues = '';
+  var fullMatrixValues = '';
   for (var indexRow = 0; indexRow < this.board.length; indexRow++) {
     var addHorizontalValues = '';
     for (var indexColumn = 0; indexColumn < this.board.length; indexColumn++) {
+      fullMatrixValues += this.board[indexRow][indexColumn];
       addHorizontalValues += this.board[indexRow][indexColumn];
       if (indexRow === indexColumn) {
         firstDiagonalValues += this.board[indexRow][indexColumn];
@@ -108,14 +119,14 @@ Game.prototype.checkVictoryConditions = function () {
         return secondDiagonalValues;
       }
     }
-    addVerticalValues += this.board[indexRow][indexColumnCheck];
+    addVerticalValues = this.board.map(value => value[indexRow]).join('');
     if (victoryConditionRegex.test(addVerticalValues)) {
       return addVerticalValues;
     }
-    if (indexRow === this.board.length) {
-      addVerticalValues = '';
-      indexColumnCheck++;
-    }
+    addVerticalValues = [];
+  }
+  if (fullMatrixValues.length === Math.pow(this.board.length, 2)) {
+    return 'draw';
   }
   return;
 };
@@ -128,6 +139,9 @@ Game.prototype.updatePlayers = function (messageType, whoMadeTheMove, whosTurnIs
       break;
     case constants.messageType.GAMECOMPLETED:
       messageText = `${whoMadeTheMove.name} has won the game, congratulations! ${whosTurnIsItNow.name} has lost, better luck next time...`;
+      break;
+    case constants.messageType.GAMECOMPLETEDDRAW:
+      messageText = `${whoMadeTheMove.name} and ${whosTurnIsItNow.name} have reached a draw.`;
       break;
   }
   var message = this.socketController.createMessageObject(

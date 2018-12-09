@@ -34,6 +34,10 @@ Connection.prototype.startMessageListener = function () {
   });
 };
 
+Connection.prototype.onNewConnection = function () {
+  this.connection.onopen((message) => console.log('On connected:', message));
+};
+
 Connection.prototype.startCloseListener = function () {
   this.connection.on('close', () => {
     this.onConnectionClose.trigger({

@@ -6,6 +6,7 @@ module.exports = {
     GAMESTARTED: 'game-started',
     GAMEUPDATED: 'game-updated',
     GAMECOMPLETED: 'game-completed',
+    GAMECOMPLETEDDRAW: 'game-completed-draw',
     GENERALJOIN: 'general-join',
     GENERALLEAVE: 'general-leave',
     PLAYERSAVAILABLE: 'players-available',

@@ -37,7 +37,7 @@ Main.prototype.startNewGame = function (newGameObj) {
 
 Main.prototype.updateGame = function (gameUpdate) {
   var gameToUpdate = this.gamesArray.find(game => game.playerOne.name === gameUpdate.game.player.name || game.playerTwo.name === gameUpdate.game.player.name);
-  gameToUpdate.updateGameBoard(gameUpdate);
+  gameToUpdate && gameToUpdate.updateGameBoard(gameUpdate);
 };
 
 Main.prototype.closeGame = function (game) {

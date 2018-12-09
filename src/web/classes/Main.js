@@ -93,7 +93,9 @@ Main.prototype.displayServerMessage = function (message) {
     this.messageHandler.displayMessage(message.text);
     this.updatePlayersArray(message);
   }
-  if (message.type === constants.messageType.GAMEUPDATED || message.type === constants.messageType.GAMECOMPLETED) {
+  if (message.type === constants.messageType.GAMEUPDATED
+    || message.type === constants.messageType.GAMECOMPLETED
+    || message.type === constants.messageType.GAMECOMPLETEDDRAW) {
     if (this.itsMyGame(message)) {
       this.messageHandler.displayGameMessages(message.text);
     }

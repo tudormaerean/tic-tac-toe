@@ -47,6 +47,9 @@ SocketController.prototype.startMessageListener = function () {
       case constants.messageType.GAMECOMPLETED:
         this.onGameCompleted.trigger(parsedMessage);
         break;
+      case constants.messageType.GAMECOMPLETEDDRAW:
+        this.onGameCompleted.trigger(parsedMessage);
+        break;
       case constants.messageType.GENERAL:
         this.onMessageReceived.trigger(parsedMessage);
         break;

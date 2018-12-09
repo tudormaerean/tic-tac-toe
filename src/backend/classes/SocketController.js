@@ -73,7 +73,7 @@ SocketController.prototype.makeClientsAvailableGameCompleted = function (message
   });
   var message = this.createMessageObject(
     messageType,
-    `${playerWon.name} has won a game against ${playerLost.name}.`,
+    messageType === constants.messageType.GAMECOMPLETEDDRAW ? `${playerWon.name} and ${playerLost.name} have reached a draw.` : `${playerWon.name} has won a game against ${playerLost.name}.`,
   );
   this.updateClients(message);
 };
