@@ -80,7 +80,6 @@ SocketController.prototype.makeClientsAvailableGameCompleted = function (message
 
 SocketController.prototype.updateClients = function (message) {
   var updatedPlayersArray = this.connectionsArray.map(connection => connection.player);
-  console.log('updatedPlayersArray', updatedPlayersArray);
   this.connectionsArray.forEach(connection => {
     connection.sendMessage({
       type: message.type,

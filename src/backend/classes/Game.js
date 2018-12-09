@@ -1,8 +1,6 @@
 var CEvent = require('./CEvent');
 var constants = require('../utils/constants');
 
-const BoardSideLength = 3;
-
 function Game() {
   this.playerOne = {
     name: undefined,
@@ -18,6 +16,7 @@ function Game() {
   this.currentTurn = {
     name: undefined,
   };
+  this.boardSideLength;
   this.socketController;
   this.onGameEnded = new CEvent();
 }
@@ -37,7 +36,8 @@ Game.prototype.init = function (newGameObj, socketController) {
   this.currentTurn = {
     name: newGameObj.game.initiatingPlayer,
   };
-  this.board = this.initBoard(BoardSideLength)
+  this.boardSideLength = newGameObj.game.boardSize;
+  this.board = this.initBoard();
   this.socketController.updateClients(this.socketController.createMessageObject(
     constants.messageType.GAMESTARTED,
     `${this.playerOne.name} and ${this.playerTwo.name} have started a game.`,
@@ -59,9 +59,9 @@ Game.prototype.init = function (newGameObj, socketController) {
 
 Game.prototype.initBoard = function () {
   var board = [];
-  for (var indexRow = 0; indexRow < BoardSideLength; indexRow++) {
+  for (var indexRow = 0; indexRow < this.boardSideLength; indexRow++) {
     var newColumn = [];
-    for (var indexColumn = 0; indexColumn < BoardSideLength; indexColumn++) {
+    for (var indexColumn = 0; indexColumn < this.boardSideLength; indexColumn++) {
       newColumn.push(constants.cellType.FREE);
     }
     board.push(newColumn);
@@ -83,7 +83,7 @@ Game.prototype.updateGameBoard = function (update) {
 };
 
 Game.prototype.checkVictoryConditions = function () {
-  var victoryConditionRegex = RegExp(`[X]{${this.board.length}}|[0]{${this.board.length}}`);
+  var victoryConditionRegex = RegExp(`[X]{${this.board.length}}|[O]{${this.board.length}}`);
   var addVerticalValues = '';
   var indexColumnCheck = 0;
   var firstDiagonalValues = '';

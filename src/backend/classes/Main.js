@@ -11,7 +11,7 @@ Main.prototype.init = function (server) {
 
   this.socketController.init(server);
   this.socketController.onNewConnection.addEventListener(() => null);
-  this.socketController.onRemoveConnection.addEventListener(() => null);
+  this.socketController.onRemoveConnection.addEventListener((connection) => this.closeInvalidGame(connection));
   this.socketController.onNewGameRequested.addEventListener((newGameObj) => this.startNewGame(newGameObj));
   this.socketController.onGameUpdate.addEventListener((gameUpdate) => this.updateGame(gameUpdate));
 };
@@ -36,12 +36,17 @@ Main.prototype.startNewGame = function (newGameObj) {
 };
 
 Main.prototype.updateGame = function (gameUpdate) {
-  const gameToUpdate = this.gamesArray.find(game => game.playerOne.name === gameUpdate.game.player.name || game.playerTwo.name === gameUpdate.game.player.name);
+  var gameToUpdate = this.gamesArray.find(game => game.playerOne.name === gameUpdate.game.player.name || game.playerTwo.name === gameUpdate.game.player.name);
   gameToUpdate.updateGameBoard(gameUpdate);
 };
 
 Main.prototype.closeGame = function (game) {
   this.gamesArray.splice(this.gamesArray.indexOf(game), 1);
+};
+
+Main.prototype.closeInvalidGame = function (connection) {
+  var invalidGame = this.gamesArray.find(game => game.gameConnections[0] === connection || game.gameConnections[1] === connection);
+  this.closeGame(invalidGame);
 };
 
 module.exports = Main;

@@ -47,6 +47,7 @@ Main.prototype.init = function() {
   this.socketController.onGameCompleted.addEventListener((message) => {
     this.updateGame(message);
     this.displayServerMessage(message);
+    this.closeGame();
   });
   this.socketController.init(serverSocketPath);
   this.lobbyHandler = new Lobby(this.socketController);
@@ -60,17 +61,20 @@ Main.prototype.updatePlayer = function(message) {
 
 Main.prototype.updatePlayersArray = function(message) {
   this.playersArray = message.updatedPlayersArray;
+  if (this.playersArray) {
+    var foundSelf = this.playersArray.find(player => player.name === this.player.name);
+    const foundPlayerMessage = {
+      player: foundSelf,
+    };
+    this.updatePlayer(foundPlayerMessage);
+  }
   if (message.type !== constants.messageType.JOINACK) {
     if (message.type === constants.messageType.GAMESTARTED) {
       if (this.itsMyGame(message)) {
-        const foundPlayerMessage = {
-          player: message.updatedPlayersArray.find(player => player.name === this.player.name)
-        };
-        this.updatePlayer(foundPlayerMessage);
         this.startGame(message.game, this.socketController);
       }
     }
-    if (message.type === constants.messageType.PLAYERSAVAILABLE) {
+    if (message.type === constants.messageType.GAMECOMPLETED && this.itsMyGame(message)) {
       this.player.available = true;
       this.closeGame();
     }

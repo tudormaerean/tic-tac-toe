@@ -17,8 +17,4 @@ function Cell(value, parentRowDiv, indexRow, indexColumn, itsMyTurn) {
   }
 }
 
-Cell.prototype.updateValue = function (value) {
-  this.div.innerText = value;
-};
-
 module.exports = Cell;

@@ -29,7 +29,6 @@ SocketController.prototype.startConnectedListener = function () {
 SocketController.prototype.startMessageListener = function () {
   this.socket.onmessage = (message) => {
     var parsedMessage = jc.parse(message.data);
-    // this.onMessageReceived.trigger(parsedMessage);
     switch (parsedMessage.type) {
       case constants.messageType.GENERALJOIN:
         this.onPlayerHasJoined.trigger(parsedMessage);
@@ -59,14 +58,15 @@ SocketController.prototype.startMessageListener = function () {
   };  
 };
 
-SocketController.prototype.createMessageObject = function (type, target, myPlayerName, move) {
+SocketController.prototype.createMessageObject = function (type, targetPlayer, myPlayerName, move, boardSize) {
   switch (type) {
     case constants.messageType.REQUESTNEWGAME:
       return {
         type: constants.messageType.REQUESTNEWGAME,
         game: {
-          targetPlayer: target,
+          targetPlayer,
           initiatingPlayer: myPlayerName,
+          boardSize,
         },
       };
     case constants.messageType.GAMEMOVE:
@@ -87,7 +87,9 @@ SocketController.prototype.sendMessage = function (message) {
 };
 
 SocketController.prototype.startGame = function (targetPlayer, myPlayerName) {
-  this.sendMessage(this.createMessageObject(constants.messageType.REQUESTNEWGAME, targetPlayer, myPlayerName));
+  var inputValue = parseInt(document.getElementById('inputGameSize').value) || 3;
+  var boardSize = (inputValue > 1) && (inputValue < 11) ? inputValue : 3;
+  this.sendMessage(this.createMessageObject(constants.messageType.REQUESTNEWGAME, targetPlayer, myPlayerName, undefined, boardSize));
 };
 
 SocketController.prototype.playMove = function (move) {
