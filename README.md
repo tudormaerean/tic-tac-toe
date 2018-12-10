@@ -23,6 +23,7 @@ After a game has ended, the participating player will once again be able to star
 
 ### Future issues to resolve
 
+- **There is currently no functionality to ensure that players are unique and there are certain use cases where this can lead to unusual behaviour. This is something to be added for the future!**
 - Add a singleton state object for the Node backend, if the class structure deepens.
 - Add a spectator key to the backend game object in the Game class which would hold the connections of players watching a game.
 - Add a special AI player, always present in the Lobby.
